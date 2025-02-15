@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\HuggingFaceController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -36,3 +37,6 @@ Route::middleware([
     })->name('dashboard');
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity.logs');
 });
+
+Route::get('/image-manipulation', [HuggingFaceController::class, 'index']);
+Route::post('/upload', [HuggingFaceController::class, 'classifyImage'])->name('classify.image');
