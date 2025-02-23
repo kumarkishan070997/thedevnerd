@@ -13,34 +13,69 @@ class HuggingFaceController extends Controller
     }
 
     public function classifyImage(Request $request)
-{
-    $request->validate([
-        'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-    ]);
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
 
-    $image = $request->file('image');
-    $imagePath = $image->store('uploads', 'public'); // Save image in public storage
-    $imageUrl = asset('storage/' . $imagePath); // Get the accessible URL
+        $image = $request->file('image');
+        $imagePath = $image->store('uploads', 'public'); // Save image in public storage
+        $imageUrl = asset('storage/' . $imagePath); // Get the accessible URL
 
-    $imageData = file_get_contents($image->getRealPath());
+        $imageData = file_get_contents($image->getRealPath());
 
-    try {
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . env('HUGGINGFACE_TOKEN'),
-            'Content-Type'  => 'application/octet-stream',
-        ])->withBody($imageData, 'application/octet-stream')
-          ->post('https://api-inference.huggingface.co/models/google/vit-base-patch16-224');
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('HUGGINGFACE_TOKEN'),
+                'Content-Type'  => 'application/octet-stream',
+            ])->withBody($imageData, 'application/octet-stream')
+                ->post('https://api-inference.huggingface.co/models/google/vit-base-patch16-224');
+        } catch (\Exception $e) {
+            return back()->with('error', 'API request failed: ' . $e->getMessage());
+        }
 
-    } catch (\Exception $e) {
-        return back()->with('error', 'API request failed: ' . $e->getMessage());
+        $result = json_decode($response->body(), true);
+
+        return view('huggingface.image-classifier', [
+            'result' => $result,
+            'imageUrl' => $imageUrl // Send image URL to view
+        ]);
     }
 
-    $result = json_decode($response->body(), true);
+    public function objectDetection()
+    {
+        $objectDetected = false;
+        return view('huggingface.object-detection', compact('objectDetected'));
+    }
 
-    return view('huggingface.image-classifier', [
-        'result' => $result,
-        'imageUrl' => $imageUrl // Send image URL to view
-    ]);
-}
+    public function objectDetectionMatching(Request $request)
+    {
+        $url = "https://api-inference.huggingface.co/models/facebook/detr-resnet-50";
+        $image = $request->file('image');
 
+        if (!$image) {
+            return response()->json(['error' => 'No image uploaded'], 400);
+        }
+
+        $imagePath = $image->store('uploads', 'public');
+        $imageUrl = asset('storage/' . $imagePath);
+
+        // Convert image to base64
+        $imageData = file_get_contents($image->getRealPath());
+
+        // Send request to Hugging Face API
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('HUGGINGFACE_TOKEN'),
+            'Content-Type' => 'application/json',
+        ])->withBody($imageData, 'application/octet-stream')->post($url);
+
+        // Convert response to array
+        $result = $response->json();
+
+        return response()->json([
+            'result' => $result,
+            'objectDetected' => !empty($result),
+            'imageUrl' => $imageUrl
+        ]);
+    }
 }

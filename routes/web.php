@@ -40,3 +40,6 @@ Route::middleware([
 
 Route::get('/image-manipulation', [HuggingFaceController::class, 'index']);
 Route::post('/upload', [HuggingFaceController::class, 'classifyImage'])->name('classify.image');
+
+Route::get('/object-detection', [HuggingFaceController::class, 'objectDetection']);
+Route::post('/object-detection-matching', [HuggingFaceController::class, 'objectDetectionMatching'])->name('object-detection-matching');
