@@ -43,3 +43,6 @@ Route::post('/upload', [HuggingFaceController::class, 'classifyImage'])->name('c
 
 Route::get('/object-detection', [HuggingFaceController::class, 'objectDetection']);
 Route::post('/object-detection-matching', [HuggingFaceController::class, 'objectDetectionMatching'])->name('object-detection-matching');
+
+Route::get('/text-classification', [HuggingFaceController::class, 'textClassification']);
+Route::post('/text-classification-process', [HuggingFaceController::class, 'textClassificationProcess'])->name('text-classification');

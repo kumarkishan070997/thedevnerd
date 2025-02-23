@@ -78,4 +78,20 @@ class HuggingFaceController extends Controller
             'imageUrl' => $imageUrl
         ]);
     }
+
+    public function textClassification(){
+        return view('huggingface.text-classification');
+    }
+    public function textClassificationProcess(Request $request){
+        $url = "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english";
+        $data = ["inputs" => $request->text];
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('HUGGINGFACE_TOKEN'),
+            'Content-Type' => 'application/json',
+        ])->post($url,$data);
+        $result = $response->json();
+        return response()->json([
+            'result' => $result
+        ]);
+    }
 }
