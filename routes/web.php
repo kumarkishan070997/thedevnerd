@@ -46,3 +46,6 @@ Route::post('/object-detection-matching', [HuggingFaceController::class, 'object
 
 Route::get('/text-classification', [HuggingFaceController::class, 'textClassification']);
 Route::post('/text-classification-process', [HuggingFaceController::class, 'textClassificationProcess'])->name('text-classification');
+
+Route::get('/text-to-image', [HuggingFaceController::class, 'textToImage']);
+Route::post('/text-to-image-process', [HuggingFaceController::class, 'textToImageProcess'])->name('text-to-image-classification');

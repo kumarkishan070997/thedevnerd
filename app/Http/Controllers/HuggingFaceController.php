@@ -79,19 +79,42 @@ class HuggingFaceController extends Controller
         ]);
     }
 
-    public function textClassification(){
+    public function textClassification()
+    {
         return view('huggingface.text-classification');
     }
-    public function textClassificationProcess(Request $request){
+    public function textClassificationProcess(Request $request)
+    {
         $url = "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english";
         $data = ["inputs" => $request->text];
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . env('HUGGINGFACE_TOKEN'),
             'Content-Type' => 'application/json',
-        ])->post($url,$data);
+        ])->post($url, $data);
         $result = $response->json();
         return response()->json([
             'result' => $result
         ]);
+    }
+
+    public function textToImage()
+    {
+        return view('huggingface.text-to-image');
+    }
+    public function textToImageProcess(Request $request)
+    {
+        $url = "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-dev";
+        $data = ["inputs" => $request->text];
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('HUGGINGFACE_TOKEN'),
+            'Content-Type' => 'application/json',
+        ])->withOptions(['stream' => true])->post($url, $data);
+
+        if ($response->successful()) {
+            return response($response->body(), 200)->header('Content-Type', 'image/png');
+        }
+
+        return response()->json(['error' => 'Failed to generate image'], 500);
     }
 }
