@@ -14,7 +14,7 @@
         <form id="imageUploadForm" class="mb-4">
             <div class="flex flex-col items-center">
                 <!-- Image Preview -->
-                <img id="imagePreview" class="hidden object-contain rounded-lg shadow mb-4" />
+                <img id="imagePreview" class="hidden object-contain rounded-lg shadow mb-4" style="max-width: 600px" />
 
                 <input type="file" name="image" id="imageInput" required class="border p-2 rounded-lg mb-2">
 
@@ -31,7 +31,7 @@
         <h2 id="resultTitle" class="hidden text-lg font-bold mt-4">Detected Objects</h2>
         
         <div class="relative flex justify-center mt-4">
-            <canvas id="canvas" class="hidden border border-gray-300 rounded-lg shadow-md"></canvas>
+            <canvas id="canvas" class="hidden border border-gray-300 rounded-lg shadow-md" style="max-width: 600px"></canvas>
         </div>
     </div>
 

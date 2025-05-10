@@ -1,24 +1,3 @@
-<?php
-
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-
-Route::post('/text-classification', function (Request $request) {
-    $data = ['inputs' => $request->input('text')];
-    
-    $url = "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english";
-    
-    $response = Http::withHeaders([
-        'Authorization' => 'Bearer hf_***', // Replace with your actual API key
-        'Content-Type' => 'application/json',
-    ])->post($url, $data);
-    
-    return response()->json($response->json());
-});
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
